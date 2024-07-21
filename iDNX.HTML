@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلب الأذونات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+        }
+        main {
+            margin: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>طلب الأذونات</h1>
+    </header>
+    <main>
+        <p>يرجى السماح بالوصول إلى الميزات التالية لكي نتمكن من تقديم أفضل تجربة:</p>
+        <button onclick="requestPermissions()">طلب الأذونات</button>
+        <div id="status"></div>
+        <hr>
+        <p>فتح التطبيقات:</p>
+        <button onclick="openWhatsApp()">فتح واتساب</button>
+        <button onclick="openTelegram()">فتح تيليجرام ويب</button>
+        <button onclick="openGPT()">فتح GPT-3</button>
+    </main>
+
+    <script>
+        function requestPermissions() {
+            // طلب الوصول إلى الموقع الجغرافي
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    console.log("الموقع الجغرافي تم السماح به");
+                    document.getElementById('status').innerHTML += "<p>تم السماح بالوصول إلى الموقع الجغرافي</p>";
+                },
+                function(error) {
+                    console.log("الموقع الجغرافي لم يتم السماح به");
+                    document.getElementById('status').innerHTML += "<p>لم يتم السماح بالوصول إلى الموقع الجغرافي</p>";
+                }
+            );
+
+            // طلب الوصول إلى الكاميرا
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    console.log("الكاميرا تم السماح بها");
+                    document.getElementById('status').innerHTML += "<p>تم السماح بالوصول إلى الكاميرا</p>";
+                })
+                .catch(function(error) {
+                    console.log("الكاميرا لم يتم السماح بها");
+                    document.getElementById('status').innerHTML += "<p>لم يتم السماح بالوصول إلى الكاميرا</p>";
+                });
+
+            // طلب الوصول إلى الميكروفون
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(function(stream) {
+                    console.log("الميكروفون تم السماح به");
+                    document.getElementById('status').innerHTML += "<p>تم السماح بالوصول إلى الميكروفون</p>";
+                })
+                .catch(function(error) {
+                    console.log("الميكروفون لم يتم السماح به");
+                    document.getElementById('status').innerHTML += "<p>لم يتم السماح بالوصول إلى الميكروفون</p>";
+                });
+
+            // طلب الوصول إلى جهات الاتصال (يحتاج إلى أذونات خاصة عبر تطبيقات الويب المتقدمة)
+            if ('contacts' in navigator && 'select' in navigator.contacts) {
+                const props = ['name', 'email'];
+                const opts = { multiple: true };
+
+                navigator.contacts.select(props, opts).then(contacts => {
+                    console.log('تم السماح بالوصول إلى جهات الاتصال');
+                    document.getElementById('status').innerHTML += "<p>تم السماح بالوصول إلى جهات الاتصال</p>";
+                }).catch(error => {
+                    console.log('لم يتم السماح بالوصول إلى جهات الاتصال');
+                    document.getElementById('status').innerHTML += "<p>لم يتم السماح بالوصول إلى جهات الاتصال</p>";
+                });
+            } else {
+                console.log('جهات الاتصال غير مدعومة في هذا المتصفح');
+                document.getElementById('status').innerHTML += "<p>جهات الاتصال غير مدعومة في هذا المتصفح</p>";
+            }
+
+            // طلب الوصول إلى التقويم (يحتاج إلى أذونات خاصة عبر تطبيقات الويب المتقدمة)
+            if ('permissions' in navigator && 'query' in navigator.permissions) {
+                navigator.permissions.query({ name: 'calendar' }).then(permissionStatus => {
+                    if (permissionStatus.state === 'granted') {
+                        console.log('تم السماح بالوصول إلى التقويم');
+                        document.getElementById('status').innerHTML += "<p>تم السماح بالوصول إلى التقويم</p>";
+                    } else {
+                        console.log('لم يتم السماح بالوصول إلى التقويم');
+                        document.getElementById('status').innerHTML += "<p>لم يتم السماح بالوصول إلى التقويم</p>";
+                    }
+                });
+            } else {
+                console.log('التقويم غير مدعوم في هذا المتصفح');
+                document.getElementById('status').innerHTML += "<p>التقويم غير مدعوم في هذا المتصفح</p>";
+            }
+        }
+
+        function openWhatsApp() {
+            // فتح تطبيق واتساب
+            window.location.href = "whatsapp://send?text=مرحبا";
+        }
+
+        function openTelegram() {
+            // فتح Telegram Web
+            window.open("https://web.telegram.org/", "_blank");
+        }
+
+        function openGPT() {
+            // فتح GPT-3
+            window.open("https://chat.openai.com/", "_blank");
+        }
+    </script>
+</body>
+</html>
